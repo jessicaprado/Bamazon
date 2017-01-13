@@ -32,6 +32,24 @@ var displayInventory = function () {
     })
 }
 
+var lowInventory = function() {
+    var almostSoldOut = []
+    connection.query('SELECT * FROM bamazon.inventory WHERE StockQuantity <= 5', function(err, res) {
+        var lowItems = [];
+        for (var i = 0; i < res.length; i++) {
+            lowItems.push([res[i].itemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]);
+        }
+        almostSoldOut.push(lowItems);
+        for (var i = 0; i < almostSoldOut.length; i++) {
+            console.table(['ID', 'Name', 'Price', 'Stock'], almostSoldOut[i])
+        }
+    })
+}
+
+var addInventory = function() {
+    console.log("Hello")
+}
+
 var start = function() {
     connection.query('SELECT * FROM bamazon.inventory', function(res) {
         inquirer.prompt([
@@ -50,6 +68,18 @@ var start = function() {
           switch(answers.action) {
             case 'View Products for Sale':
                 displayInventory();
+            break;
+
+            case 'View Low Inventory':
+                lowInventory();
+            break;
+
+            case 'Add to Inventory':
+                addInventory();
+            break;
+
+            case 'Add New Product':
+                console.log("This works");
             break;
           }
         });
