@@ -47,7 +47,7 @@ var startShopping = function() {
 	  		}
 	  		
 	  	}, {
-	  		name: "StockQuanity",
+	  		name: "quantity",
 	  		type: "input",
 	  		message: "How many units would you like to buy?",
             validate: function(value) {
@@ -58,7 +58,19 @@ var startShopping = function() {
 		        }
 	  		}
 	  	}]).then(function (answers) {
-  			console.log(JSON.stringify(answers, null, '  '));
+	  		connection.query("SELECT * FROM bamazon.inventory WHERE ?", {itemID: parseInt(answers.item)}, function  (err, res){
+	  			var stockLeft = ((res[0].StockQuantity) - (answers.quantity))
+	  			console.log(stockLeft);
+	  			if  (stockLeft > 0){ 
+	  				console.log("Added to cart");
+	  				connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: parseInt(stockLeft)}, {itemID: parseInt(answers.item)}]);
+	  			} else {
+	  				console.log("We don't have enough of that!")
+	  			}
+	  			
+
+	  		})
+  			//console.log(answers.item + answers.StockQuanity);
 			})
 	})
 };
