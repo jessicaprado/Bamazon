@@ -64,6 +64,7 @@ var startShopping = function() {
 	  			if  (stockLeft > 0){ 
 	  				console.log("Added to cart");
 	  				connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: parseInt(stockLeft)}, {itemID: parseInt(answers.item)}])
+	  				console.log("Your total is " + (answers.quantity) * (res[0].Price))
 	  			} else {
 	  				console.log("We don't have enough of that!")
 	  			}
