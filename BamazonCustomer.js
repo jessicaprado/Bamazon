@@ -60,11 +60,9 @@ var startShopping = function() {
 	  	}]).then(function (answers) {
 	  		connection.query("SELECT * FROM bamazon.inventory WHERE ?", {itemID: parseInt(answers.item)}, function(err, res){
 	  			var stockLeft = ((res[0].StockQuantity) - (answers.quantity))
-	  			console.log(stockLeft);
 	  			if  (stockLeft > 0){ 
-	  				console.log("Added to cart");
 	  				connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: parseInt(stockLeft)}, {itemID: parseInt(answers.item)}])
-	  				console.log("Your total is " + (answers.quantity) * (res[0].Price))
+	  				console.log("Added to cart! Your total is " + (answers.quantity) * (res[0].Price))
 	  			} else {
 	  				console.log("We don't have enough of that!")
 	  			}
