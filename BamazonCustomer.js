@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var consoleTable = require('console.table');
 
 var connection = mysql.createConnection({
     host    : "localhost",
@@ -10,9 +11,26 @@ var connection = mysql.createConnection({
 })
 
 connection.connect(function(err) {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    if (err) {
+        console.error('DB Connection Failed');
+        throw err;
+    }
+    console.log("connected as id " + connection.threadId)
 })
+
+var displayInventory = function () {
+	var inventory = [];
+	connection.query('SELECT * FROM bamazon.inventory', function(err, res) {
+	    var itemsArray = [];
+	    for (var i = 0; i < res.length; i++) {
+	        itemsArray.push([res[i].itemID, res[i].ProductName, res[i].Price]);
+	 	}
+	 	inventory.push(itemsArray);
+	 	for (var i = 0; i < inventory.length; i++) {
+	 		console.table(['ID', 'Name', 'Price'], inventory[i])
+	 	}
+	})
+}
 
 var startShopping = function() {
     connection.query('SELECT * FROM bamazon.inventory', function(res) {
@@ -20,14 +38,6 @@ var startShopping = function() {
             name: "item",
             type: "input",
             message: "Which product would you like to buy?",
-			choices: function(res) { 
-	            var itemsArray = [];
-	            for (var i = 0; i < res.length; i++) {
-	                var pleasework = itemsArray.push(("'" + res[i].itemID + " | " + res[i].ProductName + " | " + res[i].Price + "'"));
-	            }  
-                return pleasework;   
-        	    console.log(pleasework);      
-	        },
             validate: function(value) {
 		        if (isNaN(value) == false) {
 		            return true;
@@ -53,4 +63,13 @@ var startShopping = function() {
 	})
 };
 
+displayInventory();
 startShopping();
+
+
+
+
+
+
+
+
