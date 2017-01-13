@@ -47,7 +47,40 @@ var lowInventory = function() {
 }
 
 var addInventory = function() {
-    console.log("Hello")
+    displayInventory()
+    connection.query('SELECT * FROM bamazon.inventory', function(err, res) {
+         inquirer.prompt([{
+            name: "item",
+            type: "input",
+            message: "Which product would you like to add more of?",
+            validate: function(value) {
+                if (isNaN(value) == false) {
+                    return true;
+                } else {
+                    return "Please enter a valid number";
+                }
+            }
+            
+        }, {
+            name: "quantity",
+            type: "input",
+            message: "How many units would you like to add?",
+            validate: function(value) {
+                if (isNaN(value) == false) {
+                    return true;
+                } else {
+                    return "Please enter a valid number";
+                }
+            }
+        }]).then(function(answers) {
+            var selectedItemArray = ((answers.item) - 1);
+            var correctStock = (res[selectedItemArray].StockQuantity);
+            var finalCount = ((correctStock) + (parseInt(answers.quantity)));
+            connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: finalCount}, {itemID: parseInt(answers.item)}], function(res) {
+                console.log("Inventory has been updated to " + finalCount + "!");
+            })
+        })
+    })
 }
 
 var start = function() {
