@@ -83,6 +83,49 @@ var addInventory = function() {
     })
 }
 
+var newProduct = function(){
+    connection.query('SELECT * FROM bamazon.inventory', function(err, res) {
+         inquirer.prompt([{
+            name: "name",
+            type: "input",
+            message: "What is the product name?",
+        }, {
+            name: "department",
+            type: "input",
+            message: "What department does it belong to?",
+        }, {
+            name: "price",
+            type: "input",
+            message: "What is the price you want to sell it for?",
+            validate: function(value) {
+                if (isNaN(value) == false) {
+                    return true;
+                } else {
+                    return "Please enter a valid number";
+                }
+            }
+        }, {
+            name: "quantity",
+            type: "input",
+            message: "How many do you have in stock?",
+            validate: function(value) {
+                if (isNaN(value) == false) {
+                    return true;
+                } else {
+                    return "Please enter a valid number";
+                }
+            }
+        }
+
+        ]).then(function(answers) {
+            connection.query('INSERT INTO bamazon.inventory(ProductName, DepartmentName, Price, StockQuantity) VALUES ("' 
+            + answers.name + '", "' + answers.department + '", ' + (parseInt(answers.price)) + ', ' + (parseInt(answers.quantity)) + ')');
+            console.log("Item added!");
+        })
+    })
+}
+
+
 var start = function() {
     connection.query('SELECT * FROM bamazon.inventory', function(res) {
         inquirer.prompt([
@@ -112,7 +155,7 @@ var start = function() {
             break;
 
             case 'Add New Product':
-                console.log("This works");
+                newProduct();
             break;
           }
         });
