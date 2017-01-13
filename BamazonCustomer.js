@@ -23,11 +23,11 @@ var displayInventory = function () {
 	connection.query('SELECT * FROM bamazon.inventory', function(err, res) {
 	    var itemsArray = [];
 	    for (var i = 0; i < res.length; i++) {
-	        itemsArray.push([res[i].itemID, res[i].ProductName, res[i].Price]);
+	        itemsArray.push([res[i].itemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]);
 	 	}
 	 	inventory.push(itemsArray);
 	 	for (var i = 0; i < inventory.length; i++) {
-	 		console.table(['ID', 'Name', 'Price'], inventory[i])
+	 		console.table(['ID', 'Name', 'Price', 'Stock'], inventory[i])
 	 	}
 	})
 }
@@ -58,20 +58,18 @@ var startShopping = function() {
 		        }
 	  		}
 	  	}]).then(function (answers) {
-	  		connection.query("SELECT * FROM bamazon.inventory WHERE ?", {itemID: parseInt(answers.item)}, function  (err, res){
+	  		connection.query("SELECT * FROM bamazon.inventory WHERE ?", {itemID: parseInt(answers.item)}, function(err, res){
 	  			var stockLeft = ((res[0].StockQuantity) - (answers.quantity))
 	  			console.log(stockLeft);
 	  			if  (stockLeft > 0){ 
 	  				console.log("Added to cart");
-	  				connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: parseInt(stockLeft)}, {itemID: parseInt(answers.item)}]);
+	  				connection.query("UPDATE bamazon.inventory SET ? WHERE ?", [{StockQuantity: parseInt(stockLeft)}, {itemID: parseInt(answers.item)}])
 	  			} else {
 	  				console.log("We don't have enough of that!")
 	  			}
-	  			
-
 	  		})
-  			//console.log(answers.item + answers.StockQuanity);
-			})
+  			
+		})
 	})
 };
 
